@@ -56,31 +56,26 @@ module.exports = React.createClass({
   componentDidMount: function() {
     window.addEventListener('popstate', this.handlePopstate)
 
-    // Remove initial data
     delete window._shared
   },
 
   render: function() {
     var Page = this.state.match.handler,
-        data = this.props.data,
-        metadata = this.props.metadata
-
-    if (typeof window !== undefined) {
-      data = data || window._shared && window._shared.data
-      metadata = metadata || window._shared && window._shared.metadata
-    }
+        data = this.props.data || window._shared,
+        title = data && data.title,
+        description = data && data.description
 
     return (
       <html>
         <head>
-          <title>{metadata.title}</title>
+          <title>{title}</title>
 
-          <meta name="description" content={metadata.description} />
+          <meta name="description" content={description} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-          <meta property="og:title" content={metadata.title} />
+          <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />
-          <meta property="og:description" content={metadata.description} />
+          <meta property="og:description" content={description} />
           <meta property="og:image" content="/images/facebook-thumbnail.png" />
         </head>
         <body onClick={this.handleClick}>

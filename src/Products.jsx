@@ -5,7 +5,7 @@ var React = require('react'),
 
 function fetchData(callback) {
   setTimeout(function() {
-    callback(null, null, {
+    callback(null, {
       title: 'Foo'
     })
   }, 75)
