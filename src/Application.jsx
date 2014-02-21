@@ -3,7 +3,8 @@
 'use strict';
 
 var React = require('react'),
-    Router = require('./Router')
+    Router = require('./Router'),
+    Store = require('./Store')
 
 function matchPath(path) {
   return Router.recognizePath(path)
@@ -27,7 +28,8 @@ module.exports = React.createClass({
     var path = this.props.path || window.location.pathname
 
     return {
-      match: matchPath(path)
+      match: matchPath(path),
+      data: this.props.data
     }
   },
 
@@ -55,13 +57,11 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
     window.addEventListener('popstate', this.handlePopstate)
-
-    delete window._shared
   },
 
   render: function() {
     var Page = this.state.match.handler,
-        data = this.props.data || window._shared,
+        data = this.state.data,
         title = data && data.title,
         description = data && data.description
 

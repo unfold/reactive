@@ -6,8 +6,10 @@ var React = require('react'),
     Layout = require('./layout/Layout'),
     Store = require('./Store')
 
-function fetchData(callback) {
-  Store.fetch('http://localhost:3000/api', callback)
+function getManifest(params, query) {
+  return {
+    motd: 'http://localhost:3000/api'
+  }
 }
 
 module.exports = React.createClass({
@@ -15,16 +17,14 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      data: this.props.data
+      data: Store.get(getManifest())
     }
   },
 
-  loadMissingData: function(callback) {
+  loadMissingData: function() {
     if (!this.state.data) {
-      fetchData(function(err, data) {
-        this.setState({
-          data: data
-        }, callback)
+      Store.fetch(getManifest(), function(err, data) {
+        this.setState({ data: data })
       }.bind(this))
     }
   },
@@ -36,7 +36,7 @@ module.exports = React.createClass({
   render: function() {
     var motd
 
-    if (this.state.data) {
+    if (this.state.message) {
       motd = <span className="motd">Message of the day: {this.state.data.message}</span>
     }
 
@@ -50,6 +50,6 @@ module.exports = React.createClass({
   },
 
   statics: {
-    fetchData: fetchData
+    getManifest: getManifest
   }
 })

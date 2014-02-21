@@ -5,6 +5,10 @@ var superagent = require('superagent')
 var cache = {}
 
 var Store = module.exports = {
+  loadCache: function(data) {
+    cache = data
+  },
+
   get: function(key) {
     return cache[key]
   },
@@ -22,11 +26,7 @@ var Store = module.exports = {
         keys = Object.keys(manifest),
         remaining = keys.length
 
-    console.log('Loading %d urls', remaining)
-
-    function fetch(key) {
-      console.log('Fetching %s', manifest[key])
-
+    keys.forEach(function(key) {
       Store.fetch(manifest[key], function(err, data) {
         if (err) {
           running = false
@@ -37,22 +37,16 @@ var Store = module.exports = {
         Store.set(key, data)
 
         if (running && !--remaining) {
-          console.log('Merging results, HAI!')
-
           var result = keys.reduce(function(result, key) {
             result[key] = Store.get(key)
 
             return result
           }, {})
 
-          console.log(result)
-
           callback(null, result)
         }
       })
-    }
-
-    keys.forEach(fetch)
+    })
   },
 
   fetch: function(url, callback) {
