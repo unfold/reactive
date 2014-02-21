@@ -9,9 +9,7 @@ if (typeof window !== 'undefined') {
   // Enable Recat DevTools
   window.React = React
 
-  // Prefill store
-  Store.loadCache(window._shared)
-
+  Store.loadCache(window._store)
   React.renderComponent(Application(), document)
 } else {
   // Expose the entry point to the server

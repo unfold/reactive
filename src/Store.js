@@ -2,66 +2,100 @@
 
 var superagent = require('superagent')
 
-var cache = {}
+var data = {}
 
 var Store = module.exports = {
-  loadCache: function(data) {
-    cache = data
-  },
-
   get: function(key) {
-    return cache[key]
-  },
-
-  set: function(key, value) {
-    if (value !== undefined) {
-      cache[key] = value
+    if (typeof key == 'object') {
+      return Store.getManifest(key)
     } else {
-      delete cache[key]
+      return Store.getKey(key)
     }
   },
 
-  fetchManifest: function(manifest, callback) {
-    var running = true,
-        keys = Object.keys(manifest),
-        remaining = keys.length
-
-    keys.forEach(function(key) {
-      Store.fetch(manifest[key], function(err, data) {
-        if (err) {
-          running = false
-
-          return callback(err)
-        }
-
-        Store.set(key, data)
-
-        if (running && !--remaining) {
-          var result = keys.reduce(function(result, key) {
-            result[key] = Store.get(key)
-
-            return result
-          }, {})
-
-          callback(null, result)
-        }
-      })
-    })
+  set: function(key, value) {
+    if (typeof key == 'object') {
+      Store.setObject(key)
+    } else if (value !== undefined) {
+      data[key] = value
+    } else {
+      delete data[key]
+    }
   },
 
   fetch: function(url, callback) {
     if (typeof url == 'object')  {
-      return this.fetchManifest(url, callback)
+      return Store.fetchManifest(url, callback)
     } else {
-      superagent.get(url, function(err, res) {
-        if (err) return callback(err)
-
-        callback(null, res.body)
-      })
+      return Store.fetchUrl(url, callback)
     }
   },
 
+  getManifest: function(manifest) {
+    var result
+
+    for (var key in manifest) {
+      var value = Store.get(key)
+
+      if (value !== undefined) {
+        if (!result) result = {}
+
+        result[key] = value
+      }
+    }
+
+    return result
+  },
+
+  getKey: function(key) {
+    return data[key]
+  },
+
+  setObject: function(data) {
+    for (var key in data) {
+      Store.set(key, key[data])
+    }
+  },
+
+  fetchManifest: function(manifest, callback) {
+    var pending = []
+
+    for (var key in manifest) {
+      pending.push(key)
+    }
+
+    var remaining = pending.length,
+        running = true
+
+    pending.forEach(function(key) {
+      Store.fetch(manifest[key], function(err, data) {
+        if (!running) return
+        if (err) return callback(err)
+
+        Store.set(key, data)
+
+        if (!--remaining) callback(null, Store.getManifest(manifest))
+      })
+    })
+  },
+
+  fetchUrl: function(url, callback) {
+    return superagent.get(url, function(err, res) {
+      if (err) return callback(err)
+
+      callback(null, res.body)
+    })
+  },
+
+  loadCache: function(cache) {
+    data = cache
+  },
+
+  clearCache: function() {
+    data = {}
+  },
+
   toJSON: function() {
-    return JSON.stringify(cache)
+    return JSON.stringify(data)
   }
 }

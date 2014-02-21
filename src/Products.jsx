@@ -3,14 +3,6 @@
 var React = require('react'),
     Layout = require('./layout/Layout')
 
-function fetchData(callback) {
-  setTimeout(function() {
-    callback(null, {
-      title: 'Foo'
-    })
-  }, 75)
-}
-
 module.exports = React.createClass({
   displayName: 'Products',
 
@@ -44,6 +36,10 @@ module.exports = React.createClass({
   },
 
   statics: {
-    fetchData: fetchData
+    getMetadata: function() {
+      return {
+        title: 'Products'
+      }
+    }
   }
 })

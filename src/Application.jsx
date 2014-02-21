@@ -3,40 +3,21 @@
 'use strict';
 
 var React = require('react'),
-    Router = require('./Router'),
-    Store = require('./Store')
-
-function matchPath(path) {
-  return Router.recognizePath(path)
-}
-
-function preloadPath(path, callback) {
-  var match = Router.recognizePath(path),
-      handler = match.handler
-
-  if (typeof handler.fetchData == 'function') {
-    return handler.fetchData(callback)
-  }
-
-  callback()
-}
+    Router = require('./Router')
 
 module.exports = React.createClass({
   displayName: 'Application',
 
   getInitialState: function() {
-    var path = this.props.path || window.location.pathname
-
     return {
-      match: matchPath(path),
-      data: this.props.data
+      match: Router.recognizePath(this.props.path || window.location.pathname)
     }
   },
 
   navigate: function(path, callback) {
     window.history.pushState(null, null, path)
 
-    this.setState({ match: matchPath(path) }, callback)
+    this.setState({ match: Router.recognizePath(path) }, callback)
   },
 
   handleClick: function(e) {
@@ -51,7 +32,7 @@ module.exports = React.createClass({
     var path = window.location.pathname
 
     if (this.state.match.path !== path) {
-      this.setState({ match: matchPath(path) })
+      this.setState({ match: Router.recognizePath(path) })
     }
   },
 
@@ -61,9 +42,9 @@ module.exports = React.createClass({
 
   render: function() {
     var Page = this.state.match.handler,
-        data = this.state.data,
-        title = data && data.title,
-        description = data && data.description
+        metadata = Page.getMetadata ? Page.getMetadata() : {},
+        title = metadata.title || 'Reactive',
+        description = metadata.description || 'Example react applicaiton'
 
     return (
       <html>
@@ -79,16 +60,11 @@ module.exports = React.createClass({
           <meta property="og:image" content="/images/facebook-thumbnail.png" />
         </head>
         <body onClick={this.handleClick}>
-          <Page data={data} />
+          <Page />
 
           <script src="/client.js"></script>
         </body>
       </html>
     )
-  },
-
-  statics: {
-    matchPath: matchPath,
-    preloadPath: preloadPath
   }
 })

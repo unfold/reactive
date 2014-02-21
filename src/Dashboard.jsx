@@ -6,7 +6,7 @@ var React = require('react'),
     Layout = require('./layout/Layout'),
     Store = require('./Store')
 
-function getManifest(params, query) {
+function fetchData(params, query) {
   return {
     motd: 'http://localhost:3000/api'
   }
@@ -17,13 +17,13 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      data: Store.get(getManifest())
+      data: Store.get(fetchData())
     }
   },
 
   loadMissingData: function() {
     if (!this.state.data) {
-      Store.fetch(getManifest(), function(err, data) {
+      Store.fetch(fetchData(), function(err, data) {
         this.setState({ data: data })
       }.bind(this))
     }
@@ -36,8 +36,8 @@ module.exports = React.createClass({
   render: function() {
     var motd
 
-    if (this.state.message) {
-      motd = <span className="motd">Message of the day: {this.state.data.message}</span>
+    if (this.state.data) {
+      motd = <span className="motd">Message of the day: {this.state.data.motd.message}</span>
     }
 
     return (
@@ -50,6 +50,12 @@ module.exports = React.createClass({
   },
 
   statics: {
-    getManifest: getManifest
+    fetchData: fetchData,
+
+    getMetadata: function() {
+      return {
+        title: 'Dashboard'
+      }
+    }
   }
 })
