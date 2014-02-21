@@ -3,8 +3,7 @@
 'use strict';
 
 var React = require('react'),
-    Layout = require('./layout/Layout'),
-    Store = require('./Store')
+    Layout = require('./layout/Layout')
 
 function fetchData(params, query) {
   return {
@@ -17,13 +16,13 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      data: Store.get(fetchData())
+      data: this.props.store.get(fetchData())
     }
   },
 
   loadMissingData: function() {
     if (!this.state.data) {
-      Store.fetch(fetchData(), function(err, data) {
+      this.props.store.fetch(fetchData(), function(err, data) {
         this.setState({ data: data })
       }.bind(this))
     }

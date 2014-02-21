@@ -60,7 +60,7 @@ module.exports = React.createClass({
           <meta property="og:image" content="/images/facebook-thumbnail.png" />
         </head>
         <body onClick={this.handleClick}>
-          <Page />
+          <Page store={this.props.store} />
 
           <script src="/client.js"></script>
         </body>

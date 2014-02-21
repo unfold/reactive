@@ -24,21 +24,10 @@ app.get('/client.js', browserify({
 }))
 
 // Server rendering
-var Router = require('./src/Router'),
-    Store = require('./src/Store'),
+var React = require('react'),
+    Router = require('./src/Router'),
     Application = require('./src/Application'),
-    React = require('react')
-
-function renderMarkup(path) {
-  var markup = React.renderComponentToString(Application({
-    path: path
-  }))
-
-  // Inject store data into markup
-  markup = markup.replace('</head>', '<script>window._store = ' + Store.toJSON() + '</script></head>')
-
-  return markup
-}
+    Store = require('./src/Store')
 
 app.use(function(req, res, next) {
   var path = req.path,
@@ -46,16 +35,30 @@ app.use(function(req, res, next) {
 
   if (!match) return next()
 
-  // Load initial data into store
+  // Initialize store
+  var store = new Store()
+
+  function send() {
+    var markup = React.renderComponentToString(Application({
+      path: path,
+      store: store
+    }))
+
+    // Inject store data into markup
+    markup = markup.replace('</head>', '<script>window._store = ' + store.toJSON() + '</script></head>')
+
+    res.send(markup)
+  }
+
+  // Load initial data
   if (match.handler.fetchData) {
-    Store.clearCache()
-    Store.fetch(match.handler.fetchData(), function(err) {
+    store.fetch(match.handler.fetchData(), function(err) {
       if (err) return next(err)
 
-      res.send(renderMarkup(path))
+      send()
     })
   } else {
-    res.send(renderMarkup(path))
+    send()
   }
 })
 
