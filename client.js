@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var React = require('react'),
     Application = require('./src/Application'),
     Store = require('./src/Store')
