@@ -3,7 +3,7 @@
 var React = require('React')
 
 var container = document.getElementById('application')
-
+/*
 describe('client', function() {
   describe('application', function() {
     var Application = require('./Application')
@@ -53,3 +53,4 @@ describe('client', function() {
     })
   })
 })
+*/

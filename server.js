@@ -24,6 +24,7 @@ app.get('/client.js', browserify({
 }))
 
 // Server rendering
+// TODO: Router doesn't have to be global
 var React = require('react'),
     Router = require('./src/Router'),
     Application = require('./src/Application'),

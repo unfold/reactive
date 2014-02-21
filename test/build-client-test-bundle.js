@@ -1,21 +1,15 @@
 var browserify = require('browserify'),
-    routes = require('../src/routes')
+    path = require('path')
 
 var bundler = browserify({
-  basedir: __dirname + '/../src/components',
+  basedir: path.resolve('../src'),
   extensions: ['.js', '.jsx', '.json']
-}).transform('reactify')
-
-Object.keys(routes).map(function(key) {
-  return routes[key]
-}).filter(function(component, index, components) {
-  return components.indexOf(component) === index
-}).map(function(component) {
-  bundler.require('./' + component)
 })
 
 bundler
-  .require('./Application')
   .require('react', {expose: 'React'})
+  .require('./Router')
+  .require('./Application')
+  .require('./Dashboard')
   .bundle()
   .pipe(process.stdout)
