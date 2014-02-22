@@ -1,42 +1,25 @@
-/* global describe, it */
+/* global describe, it, afterEach */
 
-var React = require('React')
+var React = require('React'),
+    Store = require('./Store')
 
 var container = document.getElementById('application')
-/*
+
 describe('client', function() {
+  afterEach(function() {
+    container.innerHTML = ''
+  })
+
   describe('application', function() {
     var Application = require('./Application')
 
-    it('should properly route to Dashboard and render', function() {
-      var routes = {
-        '*': 'Dashboard'
-      }
-
-      var data = {
-        message: 'Bird'
-      }
-
+    it('should properly route to Dashboard and render message', function() {
       React.renderComponent(Application({
-        routes: routes,
-        data: data
+        path: '/',
+        store: new Store({motd: {message: 'Goodbye'}})
       }), container)
 
-      container.querySelector('.motd').textContent.should.eql('Bird')
-    })
-  })
-
-  describe('dashboard', function() {
-    var Dashboard = require('./Dashboard')
-
-    it('should properly render "Hello" message with provided data', function() {
-      React.renderComponent(Dashboard({
-        data: {
-          message: 'Hello'
-        }
-      }), container)
-
-      container.querySelector('.motd').textContent.should.eql('Hello')
+      container.querySelector('.motd').textContent.should.endWith('Goodbye')
     })
   })
 
@@ -53,4 +36,3 @@ describe('client', function() {
     })
   })
 })
-*/

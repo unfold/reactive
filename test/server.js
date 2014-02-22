@@ -1,42 +1,40 @@
-/*global describe, it */
+/*global before, after, describe, it */
 
-var request = require('supertest'),
-    server = require('../server')
+var supertest = require('supertest'),
+    sinon = require('sinon'),
+    server = require('../server'),
+    Store = require('../src/Store')
 
 describe('server', function() {
-  describe('GET /', function() {
-    it('should respond with "Hello" in both markup and initial client data', function(done) {
-      request(server)
-        .get('/')
-        .expect(200)
-        .end(done)
-        // .expect(/<span[^>]+>Hello<\/span>/)
-        // .expect(/data: {"message":"Hello"}/, done)
-    })
+  before(function() {
+    sinon
+      .stub(Store.prototype, 'fetchUrl')
+      .yields(null, {message: 'Hello'})
   })
-  /*
-  describe('GET /', function() {
-    it('should respond with "Hello" in both markup and initial client data', function(done) {
-      request(server)
-        .get('/')
-        .expect(200)
-        .expect(/<span[^>]+>Hello<\/span>/)
-        .expect(/data: {"message":"Hello"}/, done)
-    })
 
-    it('should pass request parameters to components', function(done) {
-      request(server)
-        .get('/products/fancy-jacket')
-        .expect(200)
-        .expect(/Product #<\/span><span[^>]+>fancy-jacket<\/span>/, done)
-    })
-
-    it('should handle components with event listeners', function(done) {
-      request(server)
-        .get('/products')
-        .expect(200)
-        .expect(/<h1[^>]+>Products<\/h1>/, done)
-    })
+  after(function() {
+    Store.prototype.fetchUrl.restore()
   })
-  */
+
+  it('should respond with "Hello" in both markup and initial client data', function(done) {
+    supertest(server)
+      .get('/')
+      .expect(200)
+      .expect(/<span[^>]+>Hello<\/span>/)
+      .expect(/{"message":"Hello"}/)
+      .end(done)
+  })
+  it('should pass request parameters to components', function(done) {
+    supertest(server)
+      .get('/products/fancy-jacket')
+      .expect(200)
+      .expect(/Product #<\/span><span[^>]+>fancy-jacket<\/span>/, done)
+  })
+
+  it('should handle components with event listeners', function(done) {
+    supertest(server)
+      .get('/products')
+      .expect(200)
+      .expect(/<h1[^>]+>Products<\/h1>/, done)
+  })
 })
