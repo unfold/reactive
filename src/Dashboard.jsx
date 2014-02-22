@@ -7,7 +7,7 @@ var React = require('react'),
 
 function fetchData(params, query) {
   return {
-    motd: '/api'
+    motd: 'http://localhost:/api'
   }
 }
 
