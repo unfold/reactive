@@ -3,11 +3,12 @@
 'use strict';
 
 var React = require('react'),
-    Layout = require('./layout/Layout'),
-    Store = require('./Store')
+    Layout = require('./layout/Layout')
 
-function fetchData(callback) {
-  Store.fetch('http://localhost:3000/api', callback)
+function fetchData(params, query) {
+  return {
+    motd: '/api'
+  }
 }
 
 module.exports = React.createClass({
@@ -15,16 +16,14 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      data: this.props.data
+      data: this.props.store.get(fetchData())
     }
   },
 
-  loadMissingData: function(callback) {
+  loadMissingData: function() {
     if (!this.state.data) {
-      fetchData(function(err, data) {
-        this.setState({
-          data: data
-        }, callback)
+      this.props.store.fetch(fetchData(), function(err, data) {
+        this.setState({ data: data })
       }.bind(this))
     }
   },
@@ -37,7 +36,7 @@ module.exports = React.createClass({
     var motd
 
     if (this.state.data) {
-      motd = <span className="motd">Message of the day: {this.state.data.message}</span>
+      motd = <span className="motd">Message of the day: {this.state.data.motd.message}</span>
     }
 
     return (
@@ -50,6 +49,12 @@ module.exports = React.createClass({
   },
 
   statics: {
-    fetchData: fetchData
+    fetchData: fetchData,
+
+    getMetadata: function() {
+      return {
+        title: 'Dashboard'
+      }
+    }
   }
 })
