@@ -3,13 +3,15 @@
 'use strict';
 
 var React = require('react'),
-    Router = require('./Router')
+    Router = require('./Router'),
+    Store = require('./Store')
 
 module.exports = React.createClass({
   displayName: 'Application',
 
   getInitialState: function() {
     return {
+      store: new Store(),
       match: Router.recognizePath(this.props.path || window.location.pathname)
     }
   },
@@ -60,9 +62,7 @@ module.exports = React.createClass({
           <meta property="og:image" content="/images/facebook-thumbnail.png" />
         </head>
         <body onClick={this.handleClick}>
-          <Page params={this.state.match.params} store={this.props.store} />
-
-          <script src="/client.js"></script>
+          <Page params={this.state.match.params} store={this.state.store} />
         </body>
       </html>
     )

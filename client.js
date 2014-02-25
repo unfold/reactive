@@ -1,10 +1,12 @@
 var React = require('react'),
-    Application = require('./src/Application'),
-    Store = require('./src/Store')
+    ReactAsync = require('react-async'),
+    Application = require('./src/Application')
 
-// Enable Recat DevTools
-window.React = React
+if (typeof window !== 'undefined') {
+  // Enable Recat DevTools
+  window.React = React
 
-React.renderComponent(Application({
-  store: new Store(window._store)
-}), document)
+  ReactAsync.renderComponent(Application(), document)
+}
+
+module.exports = Application

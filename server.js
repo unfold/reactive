@@ -1,11 +1,13 @@
 'use strict';
 
-var express = require('express'),
-    path = require('path'),
-    browserify = require('connect-browserify'),
-    jsx = require('node-jsx')
+require('node-jsx').install({extension: '.jsx'})
 
-jsx.install({extension: '.jsx'})
+var express = require('express'),
+    // browserify = require('connect-browserify'),
+    browserify = require('browserify'),
+    watchify = require('watchify'),
+    // path = require('path'),
+    ReactAsync = require('react-async')
 
 var app = module.exports = express(),
     debug = app.get('env') == 'development'
@@ -16,51 +18,38 @@ app.get('/api', function(req, res) {
 })
 
 // Client bundler
-app.get('/client.js', browserify({
-  entry: path.resolve('./client'),
-  extensions: ['.jsx', '.js', '.json'],
-  debug: debug,
-  watch: debug
-}))
+app.use('/client.js', function() {
+  var bundler = browserify({
+    extensions: ['.jsx', '.js', '.json'],
+    entries: './client'
+  })
+
+  if (!debug) {
+    var watcher = watchify(bundler)
+
+    return function(req, res, next) {
+      watcher.bundle({debug: true}).pipe(res)
+    }
+  } else {
+    var bundle = bundler.bundle()
+
+    return function(req, res, next) {
+      return bundle.pipe(res)
+    }
+  }
+}())
 
 // Server rendering
-// TODO: Router doesn't have to be global
-var React = require('react'),
-    Router = require('./src/Router'),
-    Application = require('./src/Application'),
-    Store = require('./src/Store')
+var client = require('./client')
 
 app.use(function(req, res, next) {
-  var path = req.path,
-      match = Router.recognizePath(path)
+  ReactAsync.renderComponentToString(client({path: req.path}), function(err, markup, data) {
+    if (err) return next(err)
 
-  if (!match) return next()
-
-  // Initialize store
-  var store = new Store()
-
-  function send() {
-    var markup = React.renderComponentToString(Application({
-      path: path,
-      store: store
-    }))
-
-    // Inject store data into markup
-    markup = markup.replace('</head>', '<script>window._store = ' + store.toJSON() + '</script></head>')
+    markup = ReactAsync.injectIntoMarkup(markup, data, ['./client.js'])
 
     res.send(markup)
-  }
-
-  // Load initial data
-  if (match.handler.fetchData) {
-    store.fetch(match.handler.fetchData(), function(err) {
-      if (err) return next(err)
-
-      send()
-    })
-  } else {
-    send()
-  }
+  })
 })
 
 if (!module.parent) {

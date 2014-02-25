@@ -11,7 +11,8 @@ module.exports = {
     {path: '/', handler: Dashboard},
     {path: '/products', handler: Products},
     {path: '/products/:productId', handler: Product},
-    {path: '/products/:productId/:variantId', handler: Product}
+    {path: '/products/:productId/:variantId', handler: Product},
+    {path: '*', handler: Dashboard}
   ],
 
   recognizePath: function(path) {

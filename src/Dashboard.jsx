@@ -3,40 +3,23 @@
 'use strict';
 
 var React = require('react'),
+    ReactAsync = require('react-async'),
     Layout = require('./layout/Layout')
 
-function fetchData(params, query) {
-  return {
-    motd: 'http://localhost:/api'
-  }
-}
-
-module.exports = React.createClass({
+module.exports = ReactAsync.createClass({
   displayName: 'Dashboard',
 
-  getInitialState: function() {
-    return {
-      data: this.props.store.get(fetchData())
-    }
-  },
-
-  loadMissingData: function() {
-    if (!this.state.data) {
-      this.props.store.fetch(fetchData(), function(err, data) {
-        this.setState({ data: data })
-      }.bind(this))
-    }
-  },
-
-  componentWillMount: function() {
-    this.loadMissingData()
+  getInitialStateAsync: function(callback) {
+    return this.props.store.fetch({
+      motd: 'http://localhost:3000/api'
+    }, callback)
   },
 
   render: function() {
     var motd
 
-    if (this.state.data) {
-      motd = <span className="motd">Message of the day: {this.state.data.motd.message}</span>
+    if (this.state.motd) {
+      motd = <span className="motd">Message of the day: {this.state.motd.message}</span>
     }
 
     return (
@@ -46,15 +29,5 @@ module.exports = React.createClass({
         {motd}
       </Layout>
     )
-  },
-
-  statics: {
-    fetchData: fetchData,
-
-    getMetadata: function() {
-      return {
-        title: 'Dashboard'
-      }
-    }
   }
 })
