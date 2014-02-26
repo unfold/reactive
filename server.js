@@ -3,10 +3,8 @@
 require('node-jsx').install({extension: '.jsx'})
 
 var express = require('express'),
-    // browserify = require('connect-browserify'),
     browserify = require('browserify'),
     watchify = require('watchify'),
-    // path = require('path'),
     ReactAsync = require('react-async')
 
 var app = module.exports = express(),
@@ -40,16 +38,18 @@ app.use('/client.js', function() {
 }())
 
 // Server rendering
-var client = require('./client')
+var Client = require('./client'),
+    Store = require('./src/Store')
 
 app.use(function(req, res, next) {
-  ReactAsync.renderComponentToString(client({path: req.path}), function(err, markup, data) {
-    if (err) return next(err)
+  ReactAsync.renderComponentToStringWithAsyncState(Client({
+    path: req.path,
+    store: new Store()
+  }), function(err, markup, data) {
+      if (err) return next(err)
 
-    markup = ReactAsync.injectIntoMarkup(markup, data, ['./client.js'])
-
-    res.send(markup)
-  })
+      res.send(ReactAsync.injectIntoMarkup(markup, data, ['./client.js']))
+    })
 })
 
 if (!module.parent) {

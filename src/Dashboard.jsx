@@ -6,12 +6,13 @@ var React = require('react'),
     ReactAsync = require('react-async'),
     Layout = require('./layout/Layout')
 
-module.exports = ReactAsync.createClass({
+module.exports = React.createClass({
+  mixins: [ReactAsync.Mixin],
   displayName: 'Dashboard',
 
   getInitialStateAsync: function(callback) {
-    return this.props.store.fetch({
-      motd: 'http://localhost:3000/api'
+    this.props.store.fetch({
+      motd: '/api'
     }, callback)
   },
 
