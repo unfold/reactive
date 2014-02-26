@@ -1,3 +1,3 @@
 build/
 node_modules/
-test/*.bundle.js
+test/support/*.bundle.js
