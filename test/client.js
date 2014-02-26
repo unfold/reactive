@@ -1,11 +1,11 @@
-/* global describe, it, afterEach */
+/* global describe, it, before, after, afterEach, sinon */
 
 var React = require('React'),
     Store = require('./Store')
 
-var container = document.getElementById('application')
-
 describe('client', function() {
+  var container = document.getElementById('application')
+
   afterEach(function() {
     container.innerHTML = ''
   })
@@ -13,11 +13,18 @@ describe('client', function() {
   describe('application', function() {
     var Application = require('./Application')
 
+    before(function() {
+      sinon
+        .stub(Store.prototype, 'fetchUrl')
+        .yields(null, {message: 'Goodbye'})
+    })
+
+    after(function() {
+      Store.prototype.fetchUrl.restore()
+    })
+
     it('should properly route to Dashboard and render message', function() {
-      React.renderComponent(Application({
-        path: '/',
-        store: new Store({motd: {message: 'Goodbye'}})
-      }), container)
+      React.renderComponent(Application(), container)
 
       container.querySelector('.motd').textContent.should.endWith('Goodbye')
     })

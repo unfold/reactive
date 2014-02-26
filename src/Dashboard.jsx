@@ -12,7 +12,7 @@ module.exports = React.createClass({
 
   getInitialStateAsync: function(callback) {
     this.props.store.fetch({
-      motd: '/api'
+      motd: 'http://localhost:3000/api'
     }, callback)
   },
 

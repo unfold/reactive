@@ -1,7 +1,7 @@
 var browserify = require('browserify')
 
 var bundler = browserify({
-  basedir: __dirname + '/../src',
+  basedir: __dirname + '/../../src',
   extensions: ['.js', '.jsx', '.json']
 })
 

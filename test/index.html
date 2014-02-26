@@ -3,23 +3,28 @@
     <title>Reactify Tests</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-    <style></style>
+
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/should/should.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon-1.8.2.js"></script>
+    <script src="support/phantomjs-shims.js"></script>
+
+    <script>
+        mocha.setup({
+          ui: 'bdd',
+          checkLeaks: true
+        })
+    </script>
   </head>
   <body>
     <div id="mocha"></div>
     <div id="application" hidden></div>
-    <script src="../node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/should/should.js"></script>
-    <script>
-      mocha.ui('bdd')
-      mocha.reporter('html')
-    </script>
 
-    <script src="./phantomjs-shims.js"></script>
-    <script src="./client.bundle.js"></script>
-    <script src="./client.js"></script>
+    <script src="support/client.bundle.js"></script>
+    <script src="client.js"></script>
+
     <script>
-      window.mochaPhantomJS ? mochaPhantomJS.run() : mocha.run()
+        window.mochaPhantomJS ? mochaPhantomJS.run() : mocha.run()
     </script>
   </body>
 </html>
