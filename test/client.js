@@ -26,7 +26,7 @@ describe('client', function() {
     it('should properly route to Dashboard and render message', function() {
       React.renderComponent(Application(), container)
 
-      container.querySelector('.motd').textContent.should.endWith('Goodbye')
+      container.querySelector('.motd').textContent.should.contain('Goodbye')
     })
   })
 
@@ -39,7 +39,7 @@ describe('client', function() {
       var button = container.querySelector('button')
       button.click()
       button.click()
-      button.querySelector('span:nth-child(2)').textContent.should.eql(2)
+      button.querySelector('span:nth-child(2)').textContent.should.equal('2')
     })
   })
 })
