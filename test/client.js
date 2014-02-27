@@ -1,4 +1,4 @@
-/* global describe, it, before, after, afterEach, sinon */
+/* global describe, it, before, after, afterEach, expect, sinon */
 
 var React = require('React'),
     Store = require('./Store')
@@ -26,7 +26,7 @@ describe('client', function() {
     it('should properly route to Dashboard and render message', function() {
       React.renderComponent(Application(), container)
 
-      container.querySelector('.motd').textContent.should.contain('Goodbye')
+      expect(container.querySelector('.motd').textContent).to.contain('Goodbye')
     })
   })
 
@@ -39,7 +39,8 @@ describe('client', function() {
       var button = container.querySelector('button')
       button.click()
       button.click()
-      button.querySelector('span:nth-child(2)').textContent.should.equal('2')
+
+      expect(button.querySelector('span:nth-child(2)').textContent).to.equal('2')
     })
   })
 })
