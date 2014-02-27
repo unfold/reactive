@@ -3,13 +3,10 @@
 require('node-jsx').install({extension: '.jsx'})
 
 var express = require('express'),
-    browserify = require('browserify'),
     watchify = require('watchify'),
-    zlib = require('zlib'),
     ReactAsync = require('react-async')
 
-var app = module.exports = express(),
-    debug = app.get('env') == 'development'
+var app = module.exports = express()
 
 // Mock API
 app.get('/api', function(req, res) {
@@ -18,35 +15,13 @@ app.get('/api', function(req, res) {
 
 // Client bundler
 app.use('/client.js', function() {
-  var bundler = browserify({
+  var watcher = watchify({
     extensions: ['.jsx', '.js', '.json'],
     entries: './client'
   })
 
-  if (debug) {
-    var watcher = watchify(bundler)
-
-    return function(req, res, next) {
-      watcher.bundle({debug: true}).pipe(res)
-    }
-  } else {
-    var cache
-
-    return function(req, res, next) {
-      if (cache) return res.send(cache)
-
-      bundler.bundle(function(err, src) {
-        if (err) return next(err)
-
-        zlib.gzip(src, function(err, src) {
-          if (err) return next(err)
-
-          cache = new Buffer(src)
-
-          res.send(src)
-        })
-      })
-    }
+  return function(req, res, next) {
+    watcher.bundle({debug: true}).pipe(res)
   }
 }())
 
