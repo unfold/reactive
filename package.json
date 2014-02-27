@@ -22,7 +22,8 @@
     "start": "node server",
     "test": "npm run test-server && npm run test-client",
     "test-server": "node_modules/.bin/mocha --require should --reporter spec test/server/*.js",
-    "test-client": "node test/support/build-client-test-bundle > test/support/client.bundle.js && node_modules/.bin/mocha-phantomjs test/index.html"
+    "test-build-client": "node test/support/build-client-test-bundle > test/support/client.bundle.js",
+    "test-client": "npm run test-build-client && node_modules/.bin/mocha-phantomjs test/index.html"
   },
   "dependencies": {
     "express": "^3.4.8",
